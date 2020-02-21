@@ -1,0 +1,9 @@
+#drawboard{
+  position:absolute;
+  left:40px;
+}
+#log-container{
+    position: fixed;
+    top: 40px;
+    right: 20px;
+}  
