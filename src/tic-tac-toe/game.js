@@ -45,11 +45,19 @@ const updateGameState = (gameState, move) => {
     if(winner) {
         finished = true;
     }
+    return {
+        board: updatedBoard,
+        nextPlayer: gameState.nextPlayer == 1 ? 2 : 1,
+        finished: finished,
+        winner: winner
+    }
 }
 
 const initialGame = {
     board: Array(3).fill().map(() => Array(3).fill(0)),
-    nextPlayer: 1
+    nextPlayer: 1,
+    finished: false,
+    winner: null
 }
     
 export const game$ = merge(userMove$, computerMove$).pipe(
