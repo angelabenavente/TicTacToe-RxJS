@@ -41,6 +41,10 @@ const updateGameState = (gameState, move) => {
     updatedBoard[move.y][move.x] = gameState.nextPlayer;
     const haveEmptyCells = getEmptyCells(updatedBoard).length == 0 ? false : true;
     let finished = !haveEmptyCells;
+    const winner = findOutWinner(updateGameState);
+    if(winner) {
+        finished = true;
+    }
 }
 
 const initialGame = {
