@@ -1,5 +1,5 @@
-import { Observable } from 'rxjs';
-import { merge, scan } from 'rxjs/operators';
+import { Observable, merge } from 'rxjs';
+import { scan, startWith } from 'rxjs/operators';
 import { userMove$ } from './userMove';
 import { computerMove$ } from './computerMove';
 
@@ -61,5 +61,6 @@ const initialGame = {
 }
     
 export const game$ = merge(userMove$, computerMove$).pipe(
+    startWith(null),
     scan(updateGameState, initialGame)
 )
