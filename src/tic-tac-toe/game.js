@@ -1,4 +1,7 @@
 import { Observable } from 'rxjs';
+import { merge, scan } from 'rxjs/operators';
+import { userMove$ } from './userMove';
+import { computerMove$ } from './computerMove';
 
 export const getEmptyCells = (board) =>{
     const emptyCells = [];
@@ -30,8 +33,19 @@ const findOutWinner = board =>{
     return null;  
 }
 
+const updateGameState = (gameState, move) => {
+    if(!move){
+        return gameState;
+    }
+    let updatedBoard = [...gameState.board];
+    updatedBoard[move.y][move.x] = gameState.nextPlayer;
+}
+
 const initialGame = {
-    board: Array(3).fill().map(() => Array(3).fill(0))
+    board: Array(3).fill().map(() => Array(3).fill(0)),
+    nextPlayer: 1
 }
     
-export const game$ = new Observable(obs => obs.next(initialGame));
+export const game$ = merge(userMove$, computerMove$).pipe(
+    scan(updateGameState, initialGame)
+)
