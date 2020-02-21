@@ -1,7 +1,8 @@
-import { Observable, merge } from 'rxjs';
+import { merge } from 'rxjs';
 import { scan, startWith, tap, takeWhile } from 'rxjs/operators';
 import { userMove$ } from './userMove';
-import { computerMove$, simulaterComputerTurn } from './computerMove';
+import { computerMove$, simulateComputerTurn } from './computerMove';
+import {gameState$} from './gameState';
 
 export const getEmptyCells = (board) =>{
     const emptyCells = [];
@@ -24,7 +25,6 @@ const findOutWinner = board =>{
                 return board[0][i];
         }
     }
-
     if( (board[0][0] && board[0][0] == board[1][1] && board[1][1] == board[2][2]) || 
         (board[2][0] && board[2][0] == board[1][1] && board[1][1] == board[0][2]) ){
         return board[1][1];
@@ -33,16 +33,16 @@ const findOutWinner = board =>{
     return null;  
 }
 
-const updateGameState = (gameState, move) => {
+const updateGameState = (gameState, move) =>{
     if(!move){
         return gameState;
     }
     let updatedBoard = [...gameState.board];
     updatedBoard[move.y][move.x] = gameState.nextPlayer;
-    const haveEmptyCells = getEmptyCells(updatedBoard).length == 0 ? false : true;
+    const haveEmptyCells = getEmptyCells(updatedBoard).length == 0 ? false : true;    
     let finished = !haveEmptyCells;
-    const winner = findOutWinner(updateGameState);
-    if(winner) {
+    const winner = findOutWinner(updatedBoard);
+    if(winner){
         finished = true;
     }
     return {
@@ -50,23 +50,17 @@ const updateGameState = (gameState, move) => {
         nextPlayer: gameState.nextPlayer == 1 ? 2 : 1,
         finished: finished,
         winner: winner
-    }
-}
-
-const initialGame = {
-    board: Array(3).fill().map(() => Array(3).fill(0)),
-    nextPlayer: 1,
-    finished: false,
-    winner: null
+    };
 }
     
 export const game$ = merge(userMove$, computerMove$).pipe(
-    startWith(null),
-    scan(updateGameState, initialGame),
+    startWith(null),    
+    scan( updateGameState, gameState$.value ),
+    tap( state => gameState$.next(state) ),
     tap((state) => {
-        if(state.nextPlayer == 2 && !state.finished) {
-            simulaterComputerTurn(getEmptyCells(state.board))
+        if(state.nextPlayer == 2 && !state.finished){
+            simulateComputerTurn(getEmptyCells(state.board))
         }
     }),
-    takeWhile(({finished}) => finished == false, true)
-)
+    takeWhile(({finished}) => finished == false, true),
+);

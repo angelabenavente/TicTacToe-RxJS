@@ -2,9 +2,7 @@ import { game$ } from './tic-tac-toe/game';
 import { drawGame, writeMessage } from './tic-tac-toe/draw'; 
 import { timer } from 'rxjs';
 
-
 export default () => {
-    
     game$.subscribe(gameState => {
         drawGame(gameState);
         if(gameState.winner){
