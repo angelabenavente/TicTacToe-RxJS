@@ -39,6 +39,8 @@ const updateGameState = (gameState, move) => {
     }
     let updatedBoard = [...gameState.board];
     updatedBoard[move.y][move.x] = gameState.nextPlayer;
+    const haveEmptyCells = getEmptyCells(updatedBoard).length == 0 ? false : true;
+    let finished = !haveEmptyCells;
 }
 
 const initialGame = {
