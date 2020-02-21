@@ -1,7 +1,7 @@
 import { Observable, merge } from 'rxjs';
-import { scan, startWith } from 'rxjs/operators';
+import { scan, startWith, tap, takeWhile } from 'rxjs/operators';
 import { userMove$ } from './userMove';
-import { computerMove$ } from './computerMove';
+import { computerMove$, simulaterComputerTurn } from './computerMove';
 
 export const getEmptyCells = (board) =>{
     const emptyCells = [];
@@ -62,5 +62,11 @@ const initialGame = {
     
 export const game$ = merge(userMove$, computerMove$).pipe(
     startWith(null),
-    scan(updateGameState, initialGame)
+    scan(updateGameState, initialGame),
+    tap((state) => {
+        if(state.nextPlayer == 2 && !state.finished) {
+            simulaterComputerTurn(getEmptyCells(state.board))
+        }
+    }),
+    takeWhile(({finished}) => finished == false, true)
 )

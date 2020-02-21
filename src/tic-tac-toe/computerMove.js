@@ -1,6 +1,6 @@
 import { Subject, timer } from 'rxjs'
 
-const computerMove$ = new Subject();
+export const computerMove$ = new Subject();
 
 export const simulaterComputerTurn = (validCells) => {
   const randomCell = Math.floor(Math.random() * validCells.length);
